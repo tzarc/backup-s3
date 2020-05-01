@@ -1,0 +1,54 @@
+version: '3.1'
+
+services:
+
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress:/var/www/html
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+
+  backup:
+    image: hleroy/backup-s3
+    volumes:
+      - wordpress:/var/www/html
+    environment:
+      # S3
+      S3_REGION: my-region-change-me
+      S3_BUCKET: my-bucket-change-me
+      S3_ACCESS_KEY_ID: access_key_id-change-me
+      S3_SECRET_ACCESS_KEY: secret_access_key-change-me
+      # Database
+      DB_ENGINE: mysql
+      DB_NAME: wordpress
+      DB_USER: wordpress
+      DB_PASS: wordpress
+      DB_HOST: db
+      DB_PORT: 3306
+      # Data
+      DATA_PATH: '/var/www/html' # Wordpress installation
+      # Cron schedule
+      CRON_SCHEDULE: '*/15 * * * *' # Every 15 minutes
+
+
+volumes:
+  wordpress:
+  db:
