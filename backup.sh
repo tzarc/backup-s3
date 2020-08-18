@@ -79,7 +79,7 @@ if [[ $DB_ENGINE == "postgres" || $DB_ENGINE == "mysql" ]]; then
       # Create mysql backup
       DB_PORT=${DB_PORT:-3306}
       MYSQL_HOST_OPTS="--host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASS"
-      mysqldump --opt --add-drop-database $MYSQL_HOST_OPTS $DB_NAME | gzip > dump.sql.gz
+      mysqldump --opt --add-drop-database --no-tablespaces $MYSQL_HOST_OPTS $DB_NAME | gzip > dump.sql.gz
 
   fi
 
