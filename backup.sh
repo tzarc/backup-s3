@@ -105,7 +105,10 @@ if [[ ! -z $DATA_PATH ]]; then
   for dir in "${data_path_array[@]}"
   do
      echo "[INFO] Adding $dir"
-     tar rf $FILE --absolute-names "$dir"
+     # tar sometime fails with the error message "file changed as we read it" and it exits with an error code 1
+     # the purpose of the code after the tar command is to ignore code 1 and return all other codes
+     # Credit: https://stackoverflow.com/questions/20318852/tar-file-changed-as-we-read-it
+     tar rf $FILE --warning=no-file-changed --absolute-names "$dir" || ( export ret=$?; [[ $ret -eq 1 ]] || exit "$ret" )
   done
 
   # Upload data backup to Amazon S3
