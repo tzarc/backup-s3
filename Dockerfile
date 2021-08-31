@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 MAINTAINER hleroy <hleroy@hleroy.com>
 
@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Add Postgres repository configuration
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt buster-pgdg main" > \
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt bullseye-pgdg main" > \
     /etc/apt/sources.list.d/pgdg.list
 
 # Import the repository signing key

@@ -76,8 +76,9 @@ if [[ $DB_ENGINE == "postgres" || $DB_ENGINE == "mysql" ]]; then
       DB_PORT=${DB_PORT:-5432}
       export PGPASSWORD=$DB_PASS
       POSTGRES_HOST_OPTS="-h $DB_HOST -p $DB_PORT -U $DB_USER"
-      psql $POSTGRES_HOST_OPTS -d $DB_NAME -c "drop schema public cascade; create schema public;"
-      pg_restore -C $POSTGRES_HOST_OPTS -d $DB_NAME < dump.sql
+      #psql $POSTGRES_HOST_OPTS -d $DB_NAME -c "drop schema public cascade; create schema public;"
+      dropdb $POSTGRES_HOST_OPTS postgres
+      pg_restore -C $POSTGRES_HOST_OPTS -d template1 < dump.sql
 
   elif [ $DB_ENGINE == "mysql" ]; then
 
