@@ -1,17 +1,17 @@
 FROM debian:bullseye-slim
 
-MAINTAINER hleroy <hleroy@hleroy.com>
+LABEL maintainer="hleroy@hleroy.com"
 
 # Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-		ca-certificates \
-		wget \
+    ca-certificates \
+    wget \
     gnupg \
     cron \
     python3-setuptools \
     python3-pip \
     python3-wheel \
-	  && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 # Install MariaDB client
 RUN apt-get update && apt-get install -y --no-install-recommends \

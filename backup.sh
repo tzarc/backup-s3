@@ -27,25 +27,32 @@ err() {
 }
 trap 'err $LINENO' ERR
 
-
-# Check if environment variable are set
-: ${S3_ACCESS_KEY_ID?"You need to set the S3_ACCESS_KEY_ID environment variable."}
-: ${S3_SECRET_ACCESS_KEY?"You need to set the S3_SECRET_ACCESS_KEY environment variable."}
-: ${S3_BUCKET?"You need to set the S3_BUCKET environment variable."}
-: ${S3_REGION?"You need to set the S3_REGION environment variable."}
-
 # We need at least a path or a database to backup
 if [[ -z $DATA_PATH && -z $DB_ENGINE ]]; then
-  echo "[WARNING] Nothing to backup. Exiting."
-  exit 1
+    echo "[WARNING] Nothing to backup."
+    exit 1
 fi
 
-# Check that database host, name and credentials are set
+# Check if S3 environment variable are set
+if [[ -z $S3_ACCESS_KEY_ID || -z $S3_SECRET_ACCESS_KEY  || -z $S3_BUCKET || -z $S3_REGION ]]; then
+    echo "[WARNING] Missing S3 environment variable(s)."
+    : ${S3_ACCESS_KEY_ID?"You need to set the S3_ACCESS_KEY_ID environment variable."}
+    : ${S3_SECRET_ACCESS_KEY?"You need to set the S3_SECRET_ACCESS_KEY environment variable."}
+    : ${S3_BUCKET?"You need to set the S3_BUCKET environment variable."}
+    : ${S3_REGION?"You need to set the S3_REGION environment variable."}
+    exit 1
+fi
+
+# Check if database host, name and credentials are set
 if [[ $DB_ENGINE == "postgres" || $DB_ENGINE == "mysql" ]]; then
-  : ${DB_NAME?"You need to set the DB_NAME environment variable."}
-  : ${DB_HOST?"You need to set the DB_HOST environment variable."}
-  : ${DB_USER?"You need to set the DB_USER environment variable."}
-  : ${DB_PASS?"You need to set the DB_PASS environment variable."}
+    if [[ -z $DB_NAME || -z $DB_HOST  || -z $DB_USER || -z $DB_PASS ]]; then
+        echo "[WARNING] Missing database environment variable(s)."
+        : ${DB_NAME?"You need to set the DB_NAME environment variable."}
+        : ${DB_HOST?"You need to set the DB_HOST environment variable."}
+        : ${DB_USER?"You need to set the DB_USER environment variable."}
+        : ${DB_PASS?"You need to set the DB_PASS environment variable."}
+        exit 1
+    fi
 fi
 
 # Export environment vars needed for aws tools

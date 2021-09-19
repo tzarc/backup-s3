@@ -27,27 +27,53 @@ err() {
 }
 trap 'err $LINENO' ERR
 
-# Check if environment variable are set
-: ${S3_ACCESS_KEY_ID?"You need to set the S3_ACCESS_KEY_ID environment variable."}
-: ${S3_SECRET_ACCESS_KEY?"You need to set the S3_SECRET_ACCESS_KEY environment variable."}
-: ${S3_BUCKET?"You need to set the S3_BUCKET environment variable."}
-: ${S3_REGION?"You need to set the S3_REGION environment variable."}
+# Catch the SIGINT and SIGTERM signal and then exit
+trap "exit" SIGINT
+trap "exit" SIGTERM
+
+# Check if backup is enabled before starting
+if [[ -z $BACKUP_ENABLED ]]; then
+    echo "[INFO] Backup not enabled."
+    echo "[INFO] Exiting in 5 seconds."
+    sleep 5
+    exit 0
+else
+    echo "[INFO] Backup enabled."
+    echo "[INFO] Checking settings."
+fi
 
 # We need at least a path or a database to backup
 if [[ -z $DATA_PATH && -z $DB_ENGINE ]]; then
-  echo "[WARNING] Nothing to backup. Exiting."
-  exit 1
+    echo "[WARNING] Nothing to backup."
+    exit 1
 fi
 
-# Check that database host, name and credentials are set
+# Check if S3 environment variable are set
+if [[ -z $S3_ACCESS_KEY_ID || -z $S3_SECRET_ACCESS_KEY  || -z $S3_BUCKET || -z $S3_REGION ]]; then
+    echo "[WARNING] Missing S3 environment variable(s)."
+    : ${S3_ACCESS_KEY_ID?"You need to set the S3_ACCESS_KEY_ID environment variable."}
+    : ${S3_SECRET_ACCESS_KEY?"You need to set the S3_SECRET_ACCESS_KEY environment variable."}
+    : ${S3_BUCKET?"You need to set the S3_BUCKET environment variable."}
+    : ${S3_REGION?"You need to set the S3_REGION environment variable."}
+    exit 1
+fi
+
+# Check if database host, name and credentials are set
 if [[ $DB_ENGINE == "postgres" || $DB_ENGINE == "mysql" ]]; then
-  : ${DB_NAME?"You need to set the DB_NAME environment variable."}
-  : ${DB_HOST?"You need to set the DB_HOST environment variable."}
-  : ${DB_USER?"You need to set the DB_USER environment variable."}
-  : ${DB_PASS?"You need to set the DB_PASS environment variable."}
+    if [[ -z $DB_NAME || -z $DB_HOST  || -z $DB_USER || -z $DB_PASS ]]; then
+        echo "[WARNING] Missing database environment variable(s)."
+        : ${DB_NAME?"You need to set the DB_NAME environment variable."}
+        : ${DB_HOST?"You need to set the DB_HOST environment variable."}
+        : ${DB_USER?"You need to set the DB_USER environment variable."}
+        : ${DB_PASS?"You need to set the DB_PASS environment variable."}
+        exit 1
+    fi
 fi
 
+# Read cron schedule from env var or provide default
 CRON_SCHEDULE=${CRON_SCHEDULE:-0 0 * * *}
+
+echo "[INFO] Settings OK."
 
 if [[ "$1" == 'no-cron' ]]; then
 
@@ -74,9 +100,15 @@ else
 
     # Setup crontab
     echo -e "SHELL=/bin/bash\nBASH_ENV=/env.sh\n$CRON_SCHEDULE /backup.sh > $LOGFIFO 2>&1" | crontab -
+
+    # Print crontab
+    echo "[INFO] The following crontab was configured:"
     crontab -l
+
+    # Launch cron
+    echo "[INFO] Launching cron"
     cron
 
     # Listen on the logs for changes
-    tail -f "$LOGFIFO"
+    exec tail -f "$LOGFIFO"
 fi

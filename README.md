@@ -16,9 +16,11 @@ Add backup-s3 to your compose file. This is an example to backup a Wordpress con
 ```yaml
   backup:
     image: hleroy/backup-s3
+    init: true                   # Enable faster container termination
     volumes:
       - wordpress:/var/www/html  # Volume to back up
-    environment:    # Provide env secrets (S3 key etc...)
+    environment:                 # Provide env secrets (S3 key etc...)
+      BACKUP_ENABLED: yes        # Any non-empty value will work
       # S3
       S3_REGION: eu-central-1
       S3_BUCKET: my-bucket
@@ -37,12 +39,16 @@ Add backup-s3 to your compose file. This is an example to backup a Wordpress con
       CRON_SCHEDULE: '0 0 * * *' # Every day at midnight
 ```
 
-`DB_ENGINE` can be `mysql` or `postgres`. If omitted, no database backup is attempted.
+`BACKUP_ENABLED` (new in v2.0.0) is mandatory. Any non-empty value will work (e.g. True, Yes). If omitted, the container exits with code 0.
+
+S3 settings (`S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`) are all mandatory. If any of them is missing, the container exits with code 1.
+
+`DB_ENGINE` can be `mysql` or `postgres`. If omitted, no database backup is attempted. If present, but database settings are missing, the container exits with code 1.
 `DB_PORT` is optional. It defaults to 3306 (for mysql) or 5432 (for postgres).
 
 `DATA_PATH` must be an absolute path with no trailing slash. If omitted, no data backup is attempted. It is possible to specify multiple paths separated by a colon (:), e.g. ```DATA_PATH: '/var/www/html/images:/var/www/html/extensions:/var/www/data'```
 
-`CRON_SHEDULE` uses the usual cron format. Try https://crontab.guru/ to customize to your needs.
+`CRON_SHEDULE` uses the usual cron format. Try https://crontab.guru/ to customize to your needs. If omitted, it defaults to `0 0 * * *` (every day at midnight).
 
 
 Usage

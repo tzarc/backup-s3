@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.7'
 
 services:
 
@@ -28,9 +28,11 @@ services:
 
   backup:
     image: hleroy/backup-s3
+    init: true                       # Enable faster container termination
     volumes:
       - wordpress:/var/www/html
     environment:
+      BACKUP_ENABLED: yes
       # S3
       S3_REGION: my-region-change-me
       S3_BUCKET: my-bucket-change-me
@@ -44,9 +46,9 @@ services:
       DB_HOST: db
       DB_PORT: 3306
       # Data
-      DATA_PATH: '/var/www/html' # Wordpress installation
+      DATA_PATH: '/var/www/html'     # Wordpress installation
       # Cron schedule
-      CRON_SCHEDULE: '*/15 * * * *' # Every 15 minutes
+      CRON_SCHEDULE: '*/15 * * * *'  # Every 15 minutes
 
 
 volumes:
