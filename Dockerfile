@@ -39,3 +39,6 @@ RUN chmod +x *.sh
 
 ENTRYPOINT ["/start.sh"]
 CMD [""]
+
+LABEL origmaintainer="hleroy@hleroy.com"
+LABEL maintainer="nick@tzarc.org"
