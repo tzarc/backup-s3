@@ -32,7 +32,7 @@ jobs:
           script: return context.payload.release.tag_name.replace('v', '')
 
       - name: Build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: .
           platforms: linux/amd64,linux/arm64,linux/arm/v7
