@@ -55,8 +55,6 @@ if [[ ! -z $DB_NAME ]]; then
 		echo "  No database backups found."
 	else
 		{
-			echo "  Timestamp               Size       Filename"
-			echo "  ----------------------  ---------  --------------------------------------------------"
 			echo "$POSTGRES_BACKUPS" | while read -r line; do
 				# Parse the line: date time size filename
 				DATE=$(echo $line | awk '{print $1}')
@@ -69,7 +67,7 @@ if [[ ! -z $DB_NAME ]]; then
 
 				printf "%s %s %s %s\n" "$DATE" "$TIME" "$SIZE" "$RESTORE_NAME"
 			done
-		} | column -t
+		} | column -t -N "Date,Time,Size,Filename"
 	fi
 	echo ""
 fi
@@ -85,8 +83,6 @@ if [[ ! -z $DATA_PATH ]]; then
 		echo "  No data backups found."
 	else
 		{
-			echo "  Timestamp               Size       Filename"
-			echo "  ----------------------  ---------  --------------------------------------------------"
 			echo "$DATA_BACKUPS" | while read -r line; do
 				# Parse the line: date time size filename
 				DATE=$(echo $line | awk '{print $1}')
@@ -99,7 +95,7 @@ if [[ ! -z $DATA_PATH ]]; then
 
 				printf "%s %s %s %s\n" "$DATE" "$TIME" "$SIZE" "$RESTORE_NAME"
 			done
-		} | column -t
+		} | column -t -N "Date,Time,Size,Filename"
 	fi
 	echo ""
 fi
