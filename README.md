@@ -1,7 +1,7 @@
 backup-s3
 =========
 
-__backup-s3__ periodically backs up a database (postgres or mysql) and/or data folder(s) to Amazon S3. Backups can be restored with a single command.
+__backup-s3__ periodically backs up a postgres database and/or data folder(s) to Amazon S3. Backups can be restored with a single command.
 
 The typical use case is to back up an application (e.g. Wordpress) run with docker-compose.
 
@@ -27,11 +27,10 @@ Add backup-s3 to your compose file. This is an example to backup a Wordpress con
       S3_ACCESS_KEY_ID: access_key_id
       S3_SECRET_ACCESS_KEY: secret_access_key
       # Database
-      DB_ENGINE: mysql
       DB_NAME: wordpress
       DB_USER: wordpress
       DB_PASS: wordpress
-      DB_HOST: mysql
+      DB_HOST: postgres
       DB_PORT: 5432
       # Data
       DATA_PATH: '/var/www/html' # Customize to your needs
@@ -43,8 +42,8 @@ Add backup-s3 to your compose file. This is an example to backup a Wordpress con
 
 S3 settings (`S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`) are all mandatory. If any of them is missing, the container exits with code 1.
 
-`DB_ENGINE` can be `mysql` or `postgres`. If omitted, no database backup is attempted. If present, but database settings are missing, the container exits with code 1.
-`DB_PORT` is optional. It defaults to 3306 (for mysql) or 5432 (for postgres).
+Database settings: If `DB_NAME` is set, then `DB_HOST`, `DB_USER`, and `DB_PASS` are required. If `DB_NAME` is omitted, no database backup is attempted.
+`DB_PORT` is optional and defaults to 5432.
 
 `DATA_PATH` must be an absolute path with no trailing slash. If omitted, no data backup is attempted. It is possible to specify multiple paths separated by a colon (:), e.g. ```DATA_PATH: '/var/www/html/images:/var/www/html/extensions:/var/www/data'```
 

@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.1] - 2025-11-29
+
+- **Breaking change** Removed MySQL/MariaDB support - PostgreSQL only
+- **Breaking change** Removed `DB_ENGINE` environment variable - no longer needed
+- Updated docker-compose example to use PostgreSQL 18
+- Database backups are now triggered by setting `DB_NAME` instead of `DB_ENGINE`
+
 ## [2.0.0] - 2021-09-19
 
 - **Breaking change** Added mandatory BACKUP_ENABLED environment var. If missing, container exits with code 0
