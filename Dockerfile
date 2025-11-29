@@ -2,6 +2,8 @@ FROM debian:13-slim
 LABEL origmaintainer="hleroy@hleroy.com"
 LABEL maintainer="nick@tzarc.org"
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 # Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     awscli \
