@@ -83,6 +83,11 @@ elif [[ "$1" == 'restore' ]]; then
 	# Restore backup
 	exec /restore.sh $2
 
+elif [[ "$1" == 'list' ]]; then
+
+	# List backups
+	exec /list.sh
+
 else
 
 	# Schedule backup with cron

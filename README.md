@@ -61,6 +61,9 @@ E.g.  `2020-04-22T00:00:01Z.87793a5e1556e0ff8a8b528328fab4ad.tgz`
 You can run an immediate backup by running:
 `docker-compose run --rm backup no-cron`
 
+You can list the last 10 backups by running:
+`docker-compose run --rm backup list`
+
 You can restore a specific backup by running:
 `docker-compose run --rm backup restore BACKUP_FILENAME`
 
@@ -78,7 +81,7 @@ A complete docker-compose example for Wordpress (docker-compose-wp-example.yml) 
 4. See backup happening every 15 minutes in the logs: `docker-compose -f docker-compose-wp-example.yml logs --follow`
 5. Force an immediate backup: `docker-compose -f docker-compose-wp-example.yml run --rm backup no-cron`
 6. Mess with Wordpress...
-7. Go to your AWS S3 console to pick up the latest backup filename
+7. List available backups: `docker-compose -f docker-compose-wp-example.yml run --rm backup list`
 8. Restore your backup: `docker-compose -f docker-compose-wp-example.yml run --rm backup restore BACKUP_FILENAME`
 9. Check that your backup is restored: http://localhost:8080
 
