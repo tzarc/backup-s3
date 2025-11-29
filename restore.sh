@@ -73,8 +73,8 @@ if [[ $DB_ENGINE == "postgres" || $DB_ENGINE == "mysql" ]]; then
 
   # Fetch database backup
   echo "[INFO] Fetching database backup from S3"
-  aws s3 cp s3://$S3_BUCKET/$DB_ENGINE/$BACKUPNAME.sql.gz dump.sql.gz
-  gzip -d dump.sql.gz
+  aws s3 cp s3://$S3_BUCKET/$DB_ENGINE/$BACKUPNAME.sql.gz /tmp/dump.sql.gz
+  gzip -d /tmp/dump.sql.gz
 
   echo "[INFO] Restoring database"
   if [ $DB_ENGINE == "postgres" ]; then
@@ -85,14 +85,14 @@ if [[ $DB_ENGINE == "postgres" || $DB_ENGINE == "mysql" ]]; then
       POSTGRES_HOST_OPTS="-h $DB_HOST -p $DB_PORT -U $DB_USER"
       #psql $POSTGRES_HOST_OPTS -d $DB_NAME -c "drop schema public cascade; create schema public;"
       dropdb $POSTGRES_HOST_OPTS $DB_NAME
-      pg_restore -C $POSTGRES_HOST_OPTS -d template1 < dump.sql
+      pg_restore -C $POSTGRES_HOST_OPTS -d template1 < /tmp/dump.sql
 
   elif [ $DB_ENGINE == "mysql" ]; then
 
       # Restore mysql backup
       DB_PORT=${DB_PORT:-3306}
       MYSQL_HOST_OPTS="--host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASS"
-      mysql $MYSQL_HOST_OPTS $DB_NAME < dump.sql
+      mysql $MYSQL_HOST_OPTS $DB_NAME < /tmp/dump.sql
 
   fi
 

@@ -79,20 +79,20 @@ if [[ $DB_ENGINE == "postgres" || $DB_ENGINE == "mysql" ]]; then
       DB_PORT=${DB_PORT:-5432}
       export PGPASSWORD=$DB_PASS
       POSTGRES_HOST_OPTS="-h $DB_HOST -p $DB_PORT -U $DB_USER"
-      pg_dump -Fc $POSTGRES_HOST_OPTS $DB_NAME | gzip > dump.sql.gz
+      pg_dump -Fc $POSTGRES_HOST_OPTS $DB_NAME | gzip > /tmp/dump.sql.gz
 
   elif [ $DB_ENGINE == "mysql" ]; then
 
       # Create mysql backup
       DB_PORT=${DB_PORT:-3306}
       MYSQL_HOST_OPTS="--host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASS"
-      mysqldump --opt --add-drop-database --no-tablespaces $MYSQL_HOST_OPTS $DB_NAME | gzip > dump.sql.gz
+      mysqldump --opt --add-drop-database --no-tablespaces $MYSQL_HOST_OPTS $DB_NAME | gzip > /tmp/dump.sql.gz
 
   fi
 
 # Upload database backup to Amazon S3
 echo "[INFO] Uploading database backup to $S3_BUCKET"
-cat dump.sql.gz | aws s3 cp - s3://$S3_BUCKET/$DB_ENGINE/$BACKUP_DATE.$RAND_STR.sql.gz || exit 2
+cat /tmp/dump.sql.gz | aws s3 cp - s3://$S3_BUCKET/$DB_ENGINE/$BACKUP_DATE.$RAND_STR.sql.gz || exit 2
 
 fi
 
