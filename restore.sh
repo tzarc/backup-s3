@@ -102,7 +102,7 @@ if [[ ! -z $DATA_PATH ]]; then
 	done
 
 	echo "[INFO] Restoring data"
-	tar xf /tmp/data.tar --absolute-names
+	tar xf /tmp/data.tar --absolute-names --no-overwrite-dir
 
 fi
 
